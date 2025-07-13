@@ -3,28 +3,67 @@ import { useMapEvent } from 'react-leaflet';
 import NoteBar from '../../component/note/NoteBar';
 import L from 'leaflet';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { deleteUserNote, getAllNotes, getUserNotes, saveUserNote, updateUserNote } from '../../query/query';
+import { deleteUserNote, getAllNotes, getUser, getUserNotes, saveImportedNotes, saveUserNote, updateUserNote } from '../../query/query';
 import NewNoteForm from '../../component/form/NewNoteForm';
 import type { SubmitHandler } from 'react-hook-form';
-import type { NoteDTO, SaveNoteDTO, UpdateNoteDTO } from '../../types/form';
+import type { NoteDTO, SaveNoteDTO, UpdateNoteDTO, UserDTO } from '../../types/form';
 import { useNavigate } from 'react-router-dom';
 import GeoMapContainer from '../../component/map/GeoMapContainer';
 import UpdateNoteForm from '../../component/form/UpdateNoteForm';
 
 const GeoNoteMap = () => {
- 
+
     const [openMarkerId, setOpenMarkerId] = useState<string | null>(null);
     const [clickedPos, setClickedPos] = useState<[number, number] | null>(null);
     const [noteToUpdate, setNoteToUpdate] = useState<NoteDTO | null>(null);
     const [updatePos, setUpdatePos] = useState<[number, number] | null>(null);
     const navigate = useNavigate();
     const markerRefs = useRef<{ [key: string]: L.Marker | null }>({});
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const queryClient = useQueryClient();
     const { data: userNotes, isLoading, error } = useQuery({
         queryKey: ['notes'],
         queryFn: localStorage.getItem("GeoNotesAccessLevel") === "ADMIN" ? getAllNotes : getUserNotes,
     });
+
+
+    const mutationImport = useMutation({
+        mutationFn: saveImportedNotes,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notes"] }),
+        onError: () => alert("Failed to import notes."),
+    });
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            const text = await file.text();
+            const geojson = JSON.parse(text);
+
+            if (geojson.type !== "FeatureCollection" || !Array.isArray(geojson.features)) {
+                alert("Invalid GeoJSON format.");
+                return;
+            }
+            // Map GeoJSON features to your note format
+            const importedNotes: SaveNoteDTO[] = geojson.features.map((feature: any) => ({
+                title: feature.properties.title,
+                content: feature.properties.content,
+                latitude: feature.geometry.coordinates[1],
+                longitude: feature.geometry.coordinates[0],
+            }));
+
+            mutationImport.mutate(importedNotes);
+
+        } catch (err) {
+            alert("Failed to import notes.");
+        }
+    };
+
+    const handleImportClick = () => {
+        fileInputRef.current?.click();
+    };
 
     const mutation = useMutation({
         mutationFn: saveUserNote,
@@ -98,8 +137,8 @@ const GeoNoteMap = () => {
         }
     }
 
-     // Component to handle map click events
-     const MapClickHandler = () => {
+    // Component to handle map click events
+    const MapClickHandler = () => {
         useMapEvent('click', (e) => {
             setClickedPos([e.latlng.lat, e.latlng.lng]);
         });
@@ -130,13 +169,13 @@ const GeoNoteMap = () => {
                     clickedPos ?
                         <NewNoteForm clickedPos={clickedPos} onSubmit={onSubmit} /> :
                         noteToUpdate ?
-                        <UpdateNoteForm
-                            note={noteToUpdate}
-                            updatePos={updatePos}
-                            setUpdatePos={setUpdatePos}
-                            onUpdate={onSaveUpdate}
-                        /> :
-                        <NoteBar notes={userNotes} isLoading={isLoading} onclick={onClick} onDelete={onDelete} onUpdate={onUpdate} />
+                            <UpdateNoteForm
+                                note={noteToUpdate}
+                                updatePos={updatePos}
+                                setUpdatePos={setUpdatePos}
+                                onUpdate={onSaveUpdate}
+                            /> :
+                            <NoteBar notes={userNotes} isLoading={isLoading} onclick={onClick} onDelete={onDelete} onUpdate={onUpdate} fileInputRef={fileInputRef} handleFileChange={handleFileChange} handleImportClick={handleImportClick}/>
                 }
             </div>
         </div>
