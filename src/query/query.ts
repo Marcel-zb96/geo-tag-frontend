@@ -64,3 +64,8 @@ export const getUser = async () => {
     const response: AxiosResponse<UserDTO> = await axios.get('/api/user/');
     return response.data;
 }
+
+export const saveImportedNotes = async (notes: SaveNoteDTO[]): Promise<NoteResponse> => { 
+    const response: AxiosResponse<NoteResponse> = await axios.post('/api/notes/import', notes);
+    return response.data;
+}
