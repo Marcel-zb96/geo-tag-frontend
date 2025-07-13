@@ -27,6 +27,21 @@ export interface NoteDTO {
     createdAt: Date;
 }
 
+
+export interface UserDTO {
+    id: string,
+    email: string,
+    userName: string,
+}
+
+export interface NoteExportDTO {
+    title: string;
+    content: string;
+    latitude: number;
+    longitude: number;
+    owner: UserDTO;
+}
+
 export interface NoteResponse {
     success: boolean;
     note?: NoteDTO;
