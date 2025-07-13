@@ -1,7 +1,7 @@
 import axios, { type AxiosResponse } from "axios";
 import { jwtDecode } from "jwt-decode";
 
-import type { CreateUserDTO, LoginDTO, LoginResponseDTO, NoteDTO, NoteResponse, SaveNoteDTO } from "../types/form";
+import type { CreateUserDTO, LoginDTO, LoginResponseDTO, NoteDTO, NoteResponse, SaveNoteDTO, UserDTO } from "../types/form";
 
 interface DecodedToken {
     role: string;
@@ -58,4 +58,9 @@ export const deleteUserNote = async (noteId: string): Promise<NoteDTO> => {
 export const updateUserNote = async (noteId: string, updatedNote: Partial<SaveNoteDTO>): Promise<NoteDTO> => {
     const response: AxiosResponse<NoteResponse> = await axios.patch(`/api/notes/${noteId}`, updatedNote);
     return response.data.note!;
+}
+
+export const getUser = async () => {
+    const response: AxiosResponse<UserDTO> = await axios.get('/api/user/');
+    return response.data;
 }
