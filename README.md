@@ -1,69 +1,100 @@
-# React + TypeScript + Vite
+<p align="center">
+    <h1 align="center">GEO-TAG-FRONTEND</h1>
+</p>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Title & Description
 
-Currently, two official plugins are available:
+This project is a frontend web application for the Geo-Tag system, built with React, TypeScript, Vite, and Tailwind CSS. It allows users to register, log in, and interact with geolocated notes on an interactive map. The frontend communicates with a RESTful backend API.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Prerequisites & Dependencies
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Before you begin, ensure you have the following installed:
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Node.js:** (Version >= 16 is recommended)
+- **npm:** (npm >= 8)
+- **A running instance of the [geo-tag-backend](https://github.com/Marcel-zb96/geo-tag-backend))**
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Installation & Setup Instructions
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1. **Clone the repository:**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+    ```bash
+    git clone https://github.com/Marcel-zb96/geo-tag-frontend.git
+    cd geo-tag-frontend
+    ```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. **Install dependencies:**
+
+    ```bash
+    npm install
+    ```
+
+3. **Configure Environment:**
+
+    - Copy `.env.example` to `.env` file.
+    - Set `VITE_SERVER_BASE_URL` to the backend server URL (e.g., `http://localhost:3000`).
+
+4. **Run the frontend app:**
+
+    ```bash
+    npm run dev
+    ```
+    This will start the Vite development server. The app will be available at `http://localhost:5173` by default.
+
+---
+
+## Architectural Choices
+
+- **Component-Based Architecture:**
+    - The app is structured around reusable React components (e.g., forms, map, header, note cards).
+    - Pages are composed from these components for maintainability and scalability.
+
+- **React + TypeScript:**
+    - TypeScript provides type safety and better developer experience.
+    - React is used for building the UI and managing state.
+
+- **Tailwind CSS:**
+    - Used for rapid, utility-first styling.
+
+- **React Query:**
+    - Handles data fetching, caching, and mutation for API calls.
+
+- **React Router:**
+    - Manages client-side routing for pages (login, register, map, etc).
+
+- **Leaflet & React-Leaflet:**
+    - Provides interactive map functionality for geolocated notes.
+
+---
+
+## Assumptions
+
+- The backend API is available and running at the URL specified in `.env`.
+- The app is intended for modern browsers with ES2022+ and CSS support.
+
+---
+
+## SOLID Principles in This Project
+
+- **Single Responsibility:**
+    - Each component (e.g., `NoteCard`, `NewNoteForm`, `GeoMapContainer`) has a focused responsibility.
+    - API logic is separated into the `query/` directory.
+
+- **Open/Closed:**
+    - Components and API functions are designed to be extended (e.g., new note features) without modifying existing code.
+
+---
+
+
+## How to Use
+
+- **Register:** Create a new account.
+- **Login:** Access your notes and the map.
+- **Map:** View, create, update, and delete geolocated notes.
+- **Logout:** End your session securely.
+
+---
